@@ -311,7 +311,6 @@
       var valuesSelected = [],
           optionsHover = false;
 
-      var label;
       if ($select.find('option:selected') !== undefined) {
         label = $select.find('option:selected');
       } else {
@@ -325,26 +324,25 @@
           selectOptions = $(this).children('option');
           options.append($('<li class="optgroup"><span>' + $(this).attr('label') + '</span></li>'));
           selectOptions.each(function() {
-            options.append($('<li><span>' + $(this).html() + '</span></li>'));
+            var disabledClass = ($(this).is(':disabled')) ? 'disabled ' : '';
+            options.append($('<li class="' + disabledClass + '"><span>' + $(this).html() + '</span></li>'));
           });
         });
 
       } else {
         selectOptions.each(function () {
           // Add disabled attr if disabled
+          var disabledClass = ($(this).is(':disabled')) ? 'disabled ' : '';
           if (multiple) {
-            options.append($('<li class="' + (($(this).is(':disabled')) ? 'disabled' : '') + '"><span><input type="checkbox"' + (($(this).is(':disabled')) ? 'disabled' : '') + '/><label></label>' + $(this).html() + '</span></li>'));
+            options.append($('<li class="' + disabledClass + '"><span><input type="checkbox"' + disabledClass + '/><label></label>' + $(this).html() + '</span></li>'));
           } else {
-            options.append($('<li class="' + (($(this).is(':disabled')) ? 'disabled' : '') + '"><span>' + $(this).html() + '</span></li>'));
+            options.append($('<li class="' + disabledClass + '"><span>' + $(this).html() + '</span></li>'));
           }
         });
       }
 
 
-
-
-
-      options.find('li').each(function (i) {
+      options.find('li:not(.optgroup)').each(function (i) {
         var $curr_select = $select;
         $(this).click(function (e) {
           // Check if option element is disabled
@@ -405,6 +403,11 @@
           }
           if (!options.is(':visible')) {
             $(this).trigger('open', ['focus']);
+            var label = $(this).val();
+            var selectedOption = options.find('li').filter(function() {
+              return $(this).text().toLowerCase() === label.toLowerCase();
+            })[0];
+            activateOption(options, selectedOption);
           }
         },
         'click': function (e){
